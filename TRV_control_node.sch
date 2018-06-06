@@ -11848,12 +11848,12 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <approved hash="202,1,165.1,129.54,U5,AREF,,,,"/>
 <approved hash="104,1,165.1,139.7,U5,AVCC,VCC,,,"/>
 <approved hash="104,1,165.1,91.44,U5,EXP,GND,,,"/>
-<approved hash="202,1,287.02,119.38,U11,RESET,,,,"/>
-<approved hash="104,1,287.02,142.24,U11,3.3V,VCC,,,"/>
-<approved hash="104,1,266.7,-30.48,J6,VBUS,5VA,,,"/>
-<approved hash="104,1,266.7,-81.28,J3,VBUS,5VB,,,"/>
-<approved hash="113,1,354.33,-56.2017,RX,,,,,"/>
-<approved hash="113,1,346.71,-58.7417,TX,,,,,"/>
+<approved hash="202,1,274.32,129.54,U11,RESET,,,,"/>
+<approved hash="104,1,274.32,152.4,U11,3.3V,VCC,,,"/>
+<approved hash="104,1,185.42,-2.54,J6,VBUS,5VA,,,"/>
+<approved hash="104,1,185.42,-53.34,J3,VBUS,5VB,,,"/>
+<approved hash="113,1,273.05,-28.2617,RX,,,,,"/>
+<approved hash="113,1,265.43,-30.8017,TX,,,,,"/>
 </errors>
 </schematic>
 </drawing>
