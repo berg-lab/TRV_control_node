@@ -11824,7 +11824,7 @@ PROD_ID: IC-12271</description>
 <text x="27.94" y="-15.24" size="2.54" layer="94" font="vector">Servo Controller</text>
 <text x="99.06" y="35.56" size="2.54" layer="94" font="vector">OLED screen</text>
 <text x="48.26" y="99.06" size="2.54" layer="94" font="vector">Buttons</text>
-<text x="284.48" y="71.12" size="2.54" layer="94" font="vector">Thermistor</text>
+<text x="276.86" y="76.2" size="2.54" layer="94" font="vector">Thermistor</text>
 </plain>
 <instances>
 <instance part="U$10" gate="G$1" x="106.68" y="160.02"/>
@@ -11974,12 +11974,12 @@ PROD_ID: IC-12271</description>
 <attribute name="MPN" x="27.94" y="-40.64" size="1.778" layer="96" display="off"/>
 </instance>
 <instance part="U4" gate="G$1" x="40.64" y="-66.04"/>
-<instance part="SUPPLY5" gate="G$1" x="279.4" y="60.96"/>
-<instance part="J5" gate="G$1" x="307.34" y="58.42" rot="R180"/>
-<instance part="R23" gate="G$1" x="289.56" y="58.42">
-<attribute name="MPN" x="289.56" y="58.42" size="1.778" layer="96" display="off"/>
+<instance part="SUPPLY5" gate="G$1" x="271.78" y="66.04"/>
+<instance part="J5" gate="G$1" x="299.72" y="63.5" rot="R180"/>
+<instance part="R23" gate="G$1" x="281.94" y="63.5">
+<attribute name="MPN" x="281.94" y="63.5" size="1.778" layer="96" display="off"/>
 </instance>
-<instance part="GND4" gate="1" x="294.64" y="48.26"/>
+<instance part="GND4" gate="1" x="287.02" y="53.34"/>
 </instances>
 <busses>
 </busses>
@@ -12219,8 +12219,8 @@ PROD_ID: IC-12271</description>
 <junction x="111.76" y="58.42"/>
 </segment>
 <segment>
-<wire x1="299.72" y1="55.88" x2="294.64" y2="55.88" width="0.1524" layer="91"/>
-<wire x1="294.64" y1="55.88" x2="294.64" y2="50.8" width="0.1524" layer="91"/>
+<wire x1="292.1" y1="60.96" x2="287.02" y2="60.96" width="0.1524" layer="91"/>
+<wire x1="287.02" y1="60.96" x2="287.02" y2="55.88" width="0.1524" layer="91"/>
 <pinref part="J5" gate="G$1" pin="2"/>
 <pinref part="GND4" gate="1" pin="GND"/>
 </segment>
@@ -12304,8 +12304,8 @@ PROD_ID: IC-12271</description>
 </segment>
 <segment>
 <pinref part="SUPPLY5" gate="G$1" pin="VCC"/>
-<wire x1="284.48" y1="58.42" x2="279.4" y2="58.42" width="0.1524" layer="91"/>
-<wire x1="279.4" y1="58.42" x2="279.4" y2="60.96" width="0.1524" layer="91"/>
+<wire x1="276.86" y1="63.5" x2="271.78" y2="63.5" width="0.1524" layer="91"/>
+<wire x1="271.78" y1="63.5" x2="271.78" y2="66.04" width="0.1524" layer="91"/>
 <pinref part="R23" gate="G$1" pin="1"/>
 </segment>
 </net>
@@ -12776,18 +12776,18 @@ PROD_ID: IC-12271</description>
 </net>
 <net name="A0" class="0">
 <segment>
-<wire x1="299.72" y1="58.42" x2="297.18" y2="58.42" width="0.1524" layer="91"/>
-<wire x1="297.18" y1="58.42" x2="294.64" y2="58.42" width="0.1524" layer="91"/>
-<wire x1="297.18" y1="58.42" x2="297.18" y2="63.5" width="0.1524" layer="91"/>
-<junction x="297.18" y="58.42"/>
-<pinref part="J5" gate="G$1" pin="1"/>
-<pinref part="R23" gate="G$1" pin="2"/>
-<label x="297.18" y="63.5" size="1.778" layer="95"/>
-</segment>
-<segment>
 <pinref part="U5" gate="G$1" pin="PC0"/>
 <wire x1="213.36" y1="144.78" x2="218.44" y2="144.78" width="0.1524" layer="91"/>
 <label x="218.44" y="144.78" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="292.1" y1="63.5" x2="289.56" y2="63.5" width="0.1524" layer="91"/>
+<wire x1="289.56" y1="63.5" x2="287.02" y2="63.5" width="0.1524" layer="91"/>
+<wire x1="289.56" y1="63.5" x2="289.56" y2="68.58" width="0.1524" layer="91"/>
+<junction x="289.56" y="63.5"/>
+<pinref part="J5" gate="G$1" pin="1"/>
+<pinref part="R23" gate="G$1" pin="2"/>
+<label x="289.56" y="68.58" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>
@@ -12809,7 +12809,7 @@ PROD_ID: IC-12271</description>
 <approved hash="113,1,273.05,-28.2617,RX,,,,,"/>
 <approved hash="113,1,265.43,-30.8017,TX,,,,,"/>
 <approved hash="113,1,49.53,-44.6938,U4,,,,,"/>
-<approved hash="113,1,302.937,55.8123,J5,,,,,"/>
+<approved hash="113,1,295.317,60.8923,J5,,,,,"/>
 </errors>
 </schematic>
 </drawing>
