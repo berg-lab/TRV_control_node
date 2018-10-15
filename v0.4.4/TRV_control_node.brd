@@ -1429,10 +1429,10 @@ Note, that not all DRC settings must be set by the manufacturer. Several can be 
 <attribute name="PROD_ID" value="IC-11997" x="50.292" y="13.716" size="1.778" layer="28" rot="MR180" display="off"/>
 <attribute name="VALUE" x="50.292" y="22.016" size="0.6096" layer="28" font="vector" ratio="20" rot="MR180" align="top-center"/>
 </element>
-<element name="ANT" library="adafruit@1" package="1X01-CLEANBIG" value="Antenna" x="58.928" y="29.21" smashed="yes">
-<attribute name="MPN" value="Helical antenna" x="58.928" y="29.21" size="1.778" layer="27" display="off"/>
-<attribute name="NAME" x="60.2488" y="29.3878" size="0.6096" layer="121" font="vector" ratio="10"/>
-<attribute name="VALUE" x="57.658" y="26.035" size="1.27" layer="27"/>
+<element name="ANT" library="adafruit@1" package="1X01-CLEANBIG" value="Antenna" x="63.754" y="20.701" smashed="yes">
+<attribute name="MPN" value="Helical antenna" x="63.754" y="20.701" size="1.778" layer="27" display="off"/>
+<attribute name="NAME" x="63.1698" y="21.8948" size="0.6096" layer="121" font="vector" ratio="10"/>
+<attribute name="VALUE" x="62.484" y="17.526" size="1.27" layer="27"/>
 </element>
 <element name="TC1" library="TagConnect" package="TC2030-IDC-NL" value="TC2030-IDC-NL" x="54.864" y="3.048" smashed="yes">
 <attribute name="NAME" x="55.626" y="4.826" size="0.6096" layer="121" font="vector" ratio="10"/>
@@ -2188,8 +2188,8 @@ Note, that not all DRC settings must be set by the manufacturer. Several can be 
 <signal name="ANT">
 <contactref element="U11" pad="9"/>
 <contactref element="ANT" pad="1"/>
-<wire x1="57.792" y1="20.716" x2="58.928" y2="21.852" width="1.016" layer="16"/>
-<wire x1="58.928" y1="21.852" x2="58.928" y2="29.21" width="1.016" layer="16"/>
+<wire x1="63.754" y1="20.701" x2="57.807" y2="20.701" width="1.016" layer="16"/>
+<wire x1="57.807" y1="20.701" x2="57.792" y2="20.716" width="1.016" layer="16"/>
 </signal>
 <signal name="VIN">
 <contactref element="U8" pad="3"/>
