@@ -1,28 +1,32 @@
 // Control node wireless data processor
 
-// Updated on 4/24/2018
+// Updated on 10/30/2018
 // Developed by Akram Ali
 
 #include <RFM69.h>  //  https://github.com/LowPowerLab/RFM69
+#include <RFM69_ATC.h>
 #include <SPI.h>
 
 // define node parameters
-#define NODEID        10 // same sa above - must be unique for each node on same network (range up to 254, 255 is used for broadcast)
-#define ENCRYPTKEY "Tt-Mh=SQ#dn#JY3_"
-#define GATEWAYID     1
-#define NETWORKID     101
-#define FREQUENCY     RF69_915MHZ //Match this with the version of your Moteino! (others: RF69_433MHZ, RF69_868MHZ)
-#define IS_RFM69HW    //uncomment only for RFM69HW! Leave out if you have RFM69W!
-#define LED           9 // led pin
+#define NODEID                130 // same sa above - must be unique for each node on same network (range up to 254, 255 is used for broadcast)
+#define NETWORKID             130
+#define GATEWAYID             1
+#define GATEWAY_NETWORKID     1
+#define ENCRYPTKEY            "Tt-Mh=SQ#dn#JY3_"
+#define FREQUENCY             RF69_915MHZ //Match this with the version of your Moteino! (others: RF69_433MHZ, RF69_868MHZ)
+#define IS_RFM69HW              //uncomment only for RFM69HW! Leave out if you have RFM69W!
+#define LED                   9 // led pin
 
 // define objects
-RFM69 radio;
+//RFM69 radio;
+RFM69_ATC radio;
 
 // define other global variables
 int setpoint;
 char dataPacket[150];
 char data[100];
 char _rssi[5];
+String serialdata;
 
 void setup()
 {
@@ -38,19 +42,21 @@ void setup()
 
 void loop()
 {
-  if(Serial.available() > 0)
+  while(Serial.available() > 0)
   {
-    char s = Serial.read();
-    setpoint = s - 48;
-    readSensors();
-  
-    Serial.println(dataPacket);
-    delay(5);
-  
+//    char s = Serial.read();
+//    setpoint = s - 48;
+//    readSensors();
+    serialdata = Serial.readString();   // kind of slow -- takes about 1 second
+    serialdata.toCharArray(dataPacket, sizeof(dataPacket));   // convert to char array
+    //Serial.println(dataPacket);
+    
     // send datapacket
+    radio.setNetwork(GATEWAY_NETWORKID);
     radio.sendWithRetry(GATEWAYID, dataPacket, strlen(dataPacket));  // send data, retry 5 times with delay of 100ms between each retry
+    radio.setNetwork(NETWORKID);
     dataPacket[0] = (char)0; // clearing first byte of char array clears the array
-  
+    
     digitalWrite(LED, HIGH);
     delay(5);
     digitalWrite(LED, LOW);
@@ -66,9 +72,9 @@ void loop()
         data[i] = (char)radio.DATA[i];
     }
 
-    dtostrf(rssi, 3, 0, _rssi);
-    strcat(data, ",r:");
-    strcat(data, _rssi);
+//    dtostrf(rssi, 3, 0, _rssi);
+//    strcat(data, ",r:");
+//    strcat(data, _rssi);
 
     if (radio.ACKRequested())
     {
