@@ -1,35 +1,31 @@
-// Control node wireless data processor v0.5
+// Control node wireless data processor v0.5.1
 
-// Updated on 11/1/2018
+// Updated on 11/19/2018
 // Developed by Akram Ali
 
 #include <RFM69.h>  //  https://github.com/LowPowerLab/RFM69
-#include <RFM69_ATC.h>
 #include <SPI.h>
 
 // define node parameters
-#define NODEID                10// same sa above - must be unique for each node on same network (range up to 254, 255 is used for broadcast)
-#define NETWORKID             10
+#define NODEID                150 // same sa above - must be unique for each node on same network (range up to 254, 255 is used for broadcast)
+#define NETWORKID             150
 #define GATEWAYID             1
 #define GATEWAY_NETWORKID     1
 #define ENCRYPTKEY            "Tt-Mh=SQ#dn#JY3_"
 #define FREQUENCY             RF69_915MHZ //Match this with the version of your Moteino! (others: RF69_433MHZ, RF69_868MHZ)
-#define IS_RFM69HW              //uncomment only for RFM69HW! Leave out if you have RFM69W!
+#define IS_RFM69HW            //uncomment only for RFM69HW! Leave out if you have RFM69W!
 #define LED                   9 // led pin
 
 // define objects
-//RFM69 radio;
-RFM69_ATC radio;
-char d[64];
-int n = 0;
-unsigned long t;
+RFM69 radio;
 
 // define other global variables
-int setpoint;
+int setpoint, manual_override;
 char dataPacket[150];
+char dataPacket2[60];
 char data[100];
 char _rssi[5];
-String serialdata;
+unsigned long t;
 
 void setup()
 {
@@ -42,56 +38,53 @@ void setup()
   radio.setHighPower(); //uncomment only for RFM69HW!
 #endif
   radio.encrypt(ENCRYPTKEY);
-  
+
   t = millis();
 }
 
 void loop()
 {
-  if(Serial.available() > 0)    // check if there is serial data
+  while(Serial.available() > 0)    // check if there is serial data
   {
-    while(Serial.available())
+    char a[2];
+    if(Serial.find("SET"))   // find setpoint
     {
-      char x = Serial.read();
-      if (x != '!')
-      {
-        dataPacket[n] = x;
-        n++;
-      }
-      else
-      {
-        n=0;
-        radio.setNetwork(GATEWAY_NETWORKID);
-        radio.sendWithRetry(GATEWAYID, dataPacket, strlen(dataPacket));  // send data, retry 5 times with delay of 100ms between each retry
-        radio.setNetwork(NETWORKID);
-        
-        memset(dataPacket, 0, sizeof dataPacket);   // clear array
-        
-        digitalWrite(LED, HIGH);
-        delay(5);
-        digitalWrite(LED, LOW);
-        break;
-      }
-    }
+      Serial.readBytes(a, 2);   // expecting two bytes after "SET"
+
+      setpoint = a[0] - 48;   // convert ASCII char value to number value ('0' in ASCII is 48)
+      manual_override = a[1] - 48;
+      readSensors();
+
+      delay(5);
+      
+      // send datapacket to gateway
+      radio.setNetwork(GATEWAY_NETWORKID);
+      radio.sendWithRetry(GATEWAYID, dataPacket, strlen(dataPacket));  // send data
+      radio.setNetwork(NETWORKID);
+      
+      memset(dataPacket, 0, sizeof dataPacket);   // clear array
     
-//    Serial.readBytes(dataPacket, n);
+      Blink(LED,5);
+    }
+    else
+      break;
+  }
+  
+//  if(Serial.available() > 0)
+//  {
 //    char s = Serial.read();
 //    setpoint = s - 48;
 //    readSensors();
-//    serialdata = Serial.readString();   // kind of slow -- takes about 1 second
-//    serialdata.toCharArray(dataPacket, sizeof(dataPacket));   // convert to char array
-//    Serial.println(dataPacket);
-    
-    // send datapacket
+//  
+//    // send datapacket to gateway
 //    radio.setNetwork(GATEWAY_NETWORKID);
-//    radio.sendWithRetry(GATEWAYID, dataPacket, strlen(dataPacket));  // send data, retry 5 times with delay of 100ms between each retry
+//    radio.sendWithRetry(GATEWAYID, dataPacket, strlen(dataPacket));  // send data
 //    radio.setNetwork(NETWORKID);
-//    dataPacket[0] = (char)0; // clearing first byte of char array clears the array
 //    
-//    digitalWrite(LED, HIGH);
-//    delay(5);
-//    digitalWrite(LED, LOW);
-  }
+//    memset(dataPacket, 0, sizeof dataPacket);   // clear array
+//  
+//    Blink(LED,5);
+//  }
 
   if (radio.receiveDone())
   {
@@ -103,39 +96,48 @@ void loop()
         data[i] = (char)radio.DATA[i];
     }
 
-//    dtostrf(rssi, 3, 0, _rssi);
-//    strcat(data, ",r:");
-//    strcat(data, _rssi);
-
     if (radio.ACKRequested())
     {
-      byte theNodeID = radio.SENDERID;
+      //byte theNodeID = radio.SENDERID;
       radio.sendACK();
+      
+      dtostrf(rssi, 3, 0, _rssi);
+      strcat(data, ",r:");
+      strcat(data, _rssi);
 
       Serial.println(data);
       delay(1);
 
-      Blink(LED,5);
-
       memset(data, 0, sizeof data);
       memset(_rssi, 0, sizeof _rssi);
+
+      Blink(LED,5);
     }
   }
-  
-  if((unsigned long)(millis()-t) >= 30000)    // send data approximately every 30 secs
-  {
-    readSensors();
-    Serial.println(dataPacket);
-    delay(1);
 
+  if((unsigned long)(millis()-t) >= 30000)    // send temp data approximately every 30 secs
+  {
+    getTemperature();
+
+    // send datapacket to gateway
+    radio.setNetwork(GATEWAY_NETWORKID);
+    radio.sendWithRetry(GATEWAYID, dataPacket2, strlen(dataPacket2));  // send data
+    radio.setNetwork(NETWORKID);
+
+    Serial.println(dataPacket2);
+    delay(1);
+    
+    memset(dataPacket2, 0, sizeof dataPacket2);   // clear array
+  
     Blink(LED,5);
-    memset(dataPacket, 0, sizeof dataPacket);   // clear array
     t = millis();
   }
+
+  
 }
 
 
-void readSensors()
+void getTemperature()
 {
   // external temp reading
   float adc = averageADC(A0);
@@ -147,29 +149,48 @@ void readSensors()
   char _a[7]="";
 
   // convert all flaoting point and integer variables into character arrays
-  int _nodeID = (int)NODEID + 4;
+  int _nodeID = (int)NODEID + 4;    // node ID of radiator surface temp
   dtostrf(_nodeID, 1, 0, _i);
   dtostrf(a, 3, 2, _a);
-  delay(5);
+  delay(1);
 
-  memset(dataPacket, 0, sizeof dataPacket);   // clear array
-  //dataPacket[0] = 0;  // first value of dataPacket should be a 0
+  memset(dataPacket2, 0, sizeof dataPacket2);   // clear array
 
   // create datapacket by combining all character arrays into a large character array
-  strcat(dataPacket, "i:");
-  strcat(dataPacket, _i);
-  strcat(dataPacket, ",a:");
-  strcat(dataPacket, _a);
+  strcat(dataPacket2, "i:");
+  strcat(dataPacket2, _i);
+  strcat(dataPacket2, ",a:");
+  strcat(dataPacket2, _a);
   delay(5);
 }
 
 
-void Blink(byte PIN, int DELAY_MS)
+
+void readSensors()
 {
-  pinMode(PIN, OUTPUT);
-  digitalWrite(PIN,HIGH);
-  delay(DELAY_MS);
-  digitalWrite(PIN,LOW);
+  //setpoint = 0;
+  
+  // define character arrays for all variables
+  char _i[3];
+  char _y[2];
+  char _u[2];
+
+  // convert all flaoting point and integer variables into character arrays
+  dtostrf(NODEID, 1, 0, _i);
+  dtostrf(setpoint, 1, 0, _y);
+  dtostrf(manual_override, 1, 0, _u);
+  delay(5);
+
+  dataPacket[0] = 0;  // first value of dataPacket should be a 0
+
+  // create datapacket by combining all character arrays into a large character array
+  strcat(dataPacket, "i:");
+  strcat(dataPacket, _i);
+  strcat(dataPacket, ",y:");
+  strcat(dataPacket, _y);
+  strcat(dataPacket, ",u:");
+  strcat(dataPacket, _u);
+  delay(5);
 }
 
 
@@ -210,6 +231,14 @@ float steinhart_2(float R)
 }
 
 
+void Blink(byte PIN, int DELAY_MS)
+{
+  pinMode(PIN, OUTPUT);
+  digitalWrite(PIN,HIGH);
+  delay(DELAY_MS);
+  digitalWrite(PIN,LOW);
+}
+
 // Fade LED *****************************************
 void fadeLED()
 {
@@ -232,5 +261,3 @@ void fadeLED()
   }
   digitalWrite(LED, LOW); // switch LED off at the end of fade
 }
-
-// bruh
