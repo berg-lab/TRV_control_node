@@ -7,9 +7,9 @@
 #include <SPI.h>
 
 // define node parameters
-//#define NODEID                150 // must be unique for each node on same network (range up to 254, 0 is broadcast)
-uint16_t NODEID               150 // same as above, but supports 10bit addresses (up to 1023 node IDs)
-#define NETWORKID             150
+//#define NODEID              220 // must be unique for each node on same network (range up to 254, 0 is broadcast)
+uint16_t NODEID =             220; // same as above, but supports 10bit addresses (up to 1023 node IDs)
+#define NETWORKID             220
 #define GATEWAYID             1
 #define GATEWAY_NETWORKID     1
 #define ENCRYPTKEY            "Tt-Mh=SQ#dn#JY3_"
@@ -172,7 +172,7 @@ void readSensors()
   //setpoint = 0;
   
   // define character arrays for all variables
-  char _i[3];
+  char _i[4];
   char _y[2];
   char _u[2];
 
