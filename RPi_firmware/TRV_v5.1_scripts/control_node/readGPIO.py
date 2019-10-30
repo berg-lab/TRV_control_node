@@ -2,23 +2,53 @@
 
 # Control Node
 # Developed by Akram Ali & Chris Riley
-# Last updated on: 11/5/2018
+# Last updated on: 10/30/2019
 
-version = "v0.5.1"
+version = "v0.5.2"
 
 import RPi.GPIO as GPIO
 import time
 from time import sleep
+from datetime import datetime
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_SSD1306
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 import os
+import subprocess
+import shlex
 
 temp_data_dir = '/home/pi/datalogger/temp_data'
 control_node_id_dir = '/home/pi/control_node'
+scripts = ['readGPIO', 'readSerial', 'writeSerial','setPWM','setPWM_ss','datalogger',
+'monitor_core_temp','preheat','enforceSchedule','checkMotion','temp_PID']
 time.sleep(1)
+
+# get current running scripts
+def get_running_scripts():
+    PIDs=[]
+    script_status=[]
+    ss = ''
+    for s in scripts:
+        cmd = "pgrep -f 'python %s.py'" % s
+        try:
+            output = subprocess.check_output(shlex.split(cmd), shell=False).decode("utf-8")
+        except subprocess.CalledProcessError as e:
+            output = ''
+        PIDs.append(output)
+        time.sleep(0.01)
+    n=0
+    for p in PIDs:
+        n+=1
+        if n == 6 or n == 8:
+            script_status.append(' ')
+        if p == '':
+            script_status.append('0')
+        else:
+            script_status.append('1')
+    ss = ''.join(script_status)
+    return ss
 
 # get latest temperature from file
 def readTemp():
@@ -212,6 +242,34 @@ while True:
 
     # if both buttons are pressed, do nothing
     if GPIO.input(button1) == 0 and GPIO.input(button2) == 0:
-        pass
+        start_time = time.time()
+        while GPIO.input(button1) == 0 and GPIO.input(button2) == 0:
+            elapsed_time = time.time() - start_time
+            if elapsed_time >= 3 and elapsed_time <= 5:
+
+                # debug stuff
+                IP = subprocess.check_output("hostname -I", shell=True).decode("utf-8")
+                cmd = "df -h | awk '$NF==\"/\"{printf \"Disk: %d/%d GB  %s\", $3,$2,$5}'"
+                Disk = subprocess.check_output(cmd, shell=True).decode("utf-8")
+                script = get_running_scripts()
+                dt = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+
+                draw.rectangle((0,0,width,height), outline=0, fill=0)   # Draw a black filled box to clear the image.
+                font = ImageFont.load_default()
+                draw.text((x, top+0),"IP: " + IP, font=font, fill=255)
+                draw.text((x, top+8), Disk, font=font, fill=255)
+                draw.text((x, top+16), "PY: " + script, font=font, fill=255)
+                draw.text((x, top+25), dt, font=font, fill=255)
+
+                disp.image(image)   # Display image.
+                disp.display()
+                time.sleep(5)
+                break
+            elif elapsed_time >= 10:
+                break
+            else:
+                time.sleep(0.005)
+            
+
     # sleep the code a bit so CPU doesn't choke to death with 100% usage
     time.sleep(0.005)
