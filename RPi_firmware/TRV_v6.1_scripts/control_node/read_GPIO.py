@@ -351,7 +351,10 @@ while True:
         temp = read_temp()
         setpoint_display(s)
         update_screen(s, temp)
-        save_setpoint(temp_setpoint)
+        if config[0]['acf']['control_strategy'] == 'pid_temp' or config[0]['acf']['control_strategy'] == 'pid_temp_motion':
+            save_setpoint(temp_setpoint, True)
+        else:
+            save_setpoint(temp_setpoint, False)
     else:
         pass
 
