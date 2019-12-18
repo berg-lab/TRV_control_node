@@ -200,6 +200,7 @@ def check_screen_rotation():
     global config
     global screen_rotation
     global RST
+    global screen_rotation_flag
 
     if screen_rotation != config[0]['acf']['screen_rotation']:  # if there is new screen rotation in config file
         screen_rotation = config[0]['acf']['screen_rotation']
