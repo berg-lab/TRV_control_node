@@ -40,6 +40,7 @@ num_setpoint = 0   # initial setpoint
 temp_setpoint = 72  # initial setpoint
 button1 = 5
 button2 = 6
+screen_rotation_flag = False
 
 RST = 24
 disp = Adafruit_SSD1306.SSD1306_128_32(rst=RST)
@@ -200,7 +201,7 @@ def check_screen_rotation():
     global screen_rotation
     global RST
 
-    if screen_rotation != config[0]['acf']['screen_rotation']:  # if there is new screen rotation in cnpofig file
+    if screen_rotation != config[0]['acf']['screen_rotation']:  # if there is new screen rotation in config file
         screen_rotation = config[0]['acf']['screen_rotation']
         if config[0]['acf']['screen_rotation'] == 'normal':
             button1 = 5
@@ -218,6 +219,18 @@ def check_screen_rotation():
             time.sleep(.1)
             button2 = 5
             button1 = 6
+        screen_rotation_flag = True
+    
+    # default values on boot
+    if screen_rotation_flag is False:
+        button1 = 5
+        button2 = 6
+        disp = Adafruit_SSD1306_orig.SSD1306_128_32(rst=RST) # create oled object (128x32 OLED) - original library
+        disp.begin()
+        disp.clear()
+        disp.display()
+        time.sleep(.1)
+        screen_rotation_flag = True
 
 
 def config_display_text():
