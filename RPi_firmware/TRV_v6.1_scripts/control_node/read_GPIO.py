@@ -321,10 +321,10 @@ config_display_text()
 # display initial values on screen
 if config[0]['acf']['control_strategy'] == 'pid_temp' or config[0]['acf']['control_strategy'] == 'pid_temp_motion':
     s = temp_setpoint
-    save_setpoint(temp_setpoint, True)
+    save_setpoint(s, True)
 else:
     s = num_setpoint
-    save_setpoint(num_setpoint, False)
+    save_setpoint(s, False)
 setpoint_display(s)
 temp = read_temp()
 update_screen(s, temp)      
@@ -352,9 +352,9 @@ while True:
         setpoint_display(s)
         update_screen(s, temp)
         if config[0]['acf']['control_strategy'] == 'pid_temp' or config[0]['acf']['control_strategy'] == 'pid_temp_motion':
-            save_setpoint(temp_setpoint, True)
+            save_setpoint(s, True)
         else:
-            save_setpoint(temp_setpoint, False)
+            save_setpoint(s, False)
     else:
         pass
 
