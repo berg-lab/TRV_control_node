@@ -16,6 +16,7 @@ import json
 # set all temporary directories
 temp_data_dir = '/home/pi/datalogger/temp_data'
 control_node_id_dir = '/home/pi/control_node'
+auto_scripts_dir = '/home/pi/auto_scripts'
 json_dir = '/home/pi/control_node/'
 
 # get node ID
@@ -121,10 +122,11 @@ def set_new_PWM(output, current_temp):
     # print ("Temp: " + str(current_temp) + "     Setpoint: " + str(setpoint) + "     PID output: " + str(output) + "     PWM setpoint: " + str(sp))
 
 
+# get latest parameters for the PID function from the config file
 def update_PID_params():
     global pid_temp_sleep_interval
 
-    if config[0]['acf']['control_strategy'] == 'pid_temp':
+    if config[0]['acf']['control_strategy'] == 'pid_temp' or config[0]['acf']['control_strategy'] == 'pid_temp_motion':
         kp = float(config[0]['acf']['proportional_gain'])
         ki = float(config[0]['acf']['integral_gain'])
         kd = float(config[0]['acf']['derivative_gain'])
@@ -138,6 +140,16 @@ def update_PID_params():
         pid.output_limits = (pid_lower_limit, pid_upper_limit)    # output value will be between -200 and 200
 
 
+# save current PID output to file so it can be logged
+def save_pid_output(output):
+    try:
+        file = open('%s/pid_output.csv' % auto_scripts_dir, 'w')        
+        file.write(str(output))
+        file.close()
+    except:
+        pass
+
+
 # loop forever
 while True:
     config = load_config()
@@ -148,6 +160,7 @@ while True:
 
     current_temp = read_temp()   # read current temperature
     output = pid(float(current_temp))   # feed current temperature into PID function and get output
+    save_pid_output(output) # save current output to file so it can be logged
 
     set_new_PWM(int(output), float(current_temp))  # set servo based on PID output
 

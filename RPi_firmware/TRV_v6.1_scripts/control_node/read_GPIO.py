@@ -4,7 +4,7 @@
 # Developed by Akram Ali & Chris Riley
 # Last updated on: 12/18/2019
 
-version = "v6.0"
+version = "v6.1"
 
 import Adafruit_GPIO.SPI as SPI
 from datetime import datetime
@@ -23,6 +23,7 @@ import os
 # set all temporary directories
 temp_data_dir = '/home/pi/datalogger/temp_data'
 control_node_id_dir = '/home/pi/control_node'
+auto_scripts_dir = '/home/pi/auto_scripts'
 json_dir = '/home/pi/control_node/'
 
 # get node ID
@@ -131,11 +132,27 @@ def read_setpoint():
         return 0
 
 # set new setpoint in file
-def save_setpoint(_s):
+def save_setpoint(_s, pid_flag):
+    if pid_flag is True:
+        pid = get_pid_output()
+    elif pid_flag is False:
+        pid = 0
+
     try:
         file = open('%s/%s.csv' % (temp_data_dir, node_ID[0]),'w')        # save data in file
-        file.write("i:%s,y:%s,u:1,w:0" % (node_ID[0], str(_s)))
+        file.write("i:%s,y:%s,u:1,w:%s" % (node_ID[0], str(_s), str(pid)))
         file.close()
+    except:
+        pass
+
+
+# get latest pid output from file
+def get_pid_output():
+    try:
+        file = open('%s/pid_output.csv' % auto_scripts_dir, 'r')        # get latest PID output
+        pid_output = round(float(file.readline()), 2)
+        file.close()
+        return pid_output
     except:
         pass
 
@@ -304,7 +321,7 @@ config_display_text()
 # display initial values on screen
 if config[0]['acf']['control_strategy'] == 'pid_temp' or config[0]['acf']['control_strategy'] == 'pid_temp_motion':
     s = temp_setpoint
-    save_setpoint(temp_setpoint)
+    save_setpoint(temp_setpoint, True)
 else:
     s = num_setpoint
     # save_setpoint(num_setpoint)
@@ -334,7 +351,7 @@ while True:
         temp = read_temp()
         setpoint_display(s)
         update_screen(s, temp)
-        # save_setpoint(temp_setpoint)
+        save_setpoint(temp_setpoint)
     else:
         pass
 
@@ -343,11 +360,11 @@ while True:
         if config[0]['acf']['control_strategy'] == 'pid_temp' or config[0]['acf']['control_strategy'] == 'pid_temp_motion':
             temp_setpoint -= 1
             setpoint_display(temp_setpoint)
-            save_setpoint(temp_setpoint)
+            save_setpoint(temp_setpoint, True)
         else:
             num_setpoint -= 1
             setpoint_display(num_setpoint)
-            save_setpoint(num_setpoint)
+            save_setpoint(num_setpoint, False)
         
         s = read_setpoint()
         temp = read_temp()
@@ -358,11 +375,11 @@ while True:
         if config[0]['acf']['control_strategy'] == 'pid_temp' or config[0]['acf']['control_strategy'] == 'pid_temp_motion':
             temp_setpoint += 1
             setpoint_display(temp_setpoint)
-            save_setpoint(temp_setpoint)
+            save_setpoint(temp_setpoint, True)
         else:
             num_setpoint += 1
             setpoint_display(num_setpoint)
-            save_setpoint(num_setpoint)
+            save_setpoint(num_setpoint, False)
 
         s = read_setpoint()
         temp = read_temp()

@@ -14,6 +14,7 @@ import json
 # set all temporary directories
 temp_data_dir = '/home/pi/datalogger/temp_data'
 control_node_id_dir = '/home/pi/control_node'
+auto_scripts_dir = '/home/pi/auto_scripts'
 json_dir = '/home/pi/control_node/'
 
 # get node ID
@@ -124,10 +125,15 @@ def update_check_motion_params():
 def write_file(command, data):
     global config
 
+    if config[0]['acf']['control_strategy'] == 'pid_temp_motion':
+        pid = read_file('pid_output')
+    else:
+        pid = 0
+
     if command == 'save_setpoint':
         try:
             file = open('%s/%s.csv' % (temp_data_dir, node_ID[0]),'w')        # save data in file
-            file.write("i:%s,y:%s,u:0,w:0" % (node_ID[0], str(data)))
+            file.write("i:%s,y:%s,u:0,w:%s" % (node_ID[0], str(data), str(pid)))
             file.close()
         except:
             pass
@@ -161,10 +167,18 @@ def read_file(command):
         except:
             pass
 
+    elif command == 'pid_output':
+        try:
+            file = open('%s/pid_output.csv' % auto_scripts_dir, 'r')        # get latest PID output
+            pid_output = round(float(file.readline()), 2)
+            file.close()
+            return pid_output
+        except:
+            pass
+
 
 # check motion forever
 while True:
-
     # get latest config
     config = load_config()
     update_check_motion_params()
