@@ -324,7 +324,7 @@ if config[0]['acf']['control_strategy'] == 'pid_temp' or config[0]['acf']['contr
     save_setpoint(temp_setpoint, True)
 else:
     s = num_setpoint
-    # save_setpoint(num_setpoint)
+    save_setpoint(num_setpoint, False)
 setpoint_display(s)
 temp = read_temp()
 update_screen(s, temp)      
