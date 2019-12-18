@@ -3,7 +3,7 @@
 # This script constantly sends data over serial at a defined interval
 
 # Developed by Akram Ali
-# Last updated on: 11/6/2018
+# Last updated on: 12/13/2019
 
 import time
 import serial
@@ -23,6 +23,9 @@ def parse(data):
 # temp = 0.0
 # flag = 0
 # id = 0
+y = 0
+u = 0
+w = 0
 temp_data_dir = '/home/pi/datalogger/temp_data'
 control_node_id_dir = '/home/pi/control_node'
 
@@ -64,8 +67,9 @@ if flag == 1:
                 pass
             y = parsed_data.get('y')
             u = parsed_data.get('u')
+            w = parsed_data.get('w')
 
-            dataline = "SET" + str(y) + str(u)
+            dataline = "<" + str(y) + "," + str(u) + "," + str(w) + ">"
             try:
                 #serialport.write(data)  # send setpoint data over serial
                 serialport.write(dataline)  # send data over serial
