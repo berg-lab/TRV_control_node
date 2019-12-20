@@ -3,7 +3,7 @@
 # This script constantly monitors incoming data over serial and saves it to a temp file
 
 # Developed by Akram Ali
-# Last updated on: 11/5/2018
+# Last updated on: 12/19/2019
 
 import time
 import serial
@@ -47,13 +47,15 @@ if flag == 1:
                     i = parsed_data.get('i')    # get node ID
                     if i is not None:     # check if string is not 'NoneType'
                         id = int(i)     # type cast string to int
-
-                        try:
-                            file = open('/home/pi/datalogger/temp_data/%d.csv' % id,'w')
-                            file.write(data)     # save data in a csv file
-                            file.close()
-                        except:
+                        if id % 10 == 0:    # if serial print from node id (shouldn't be receiving this, only sending it)
                             pass
+                        else:
+                            try:
+                                file = open('/home/pi/datalogger/temp_data/%d.csv' % id,'w')
+                                file.write(data)     # save data in a csv file
+                                file.close()
+                            except:
+                                pass
                 else:
                     pass
             else:       # either incomplete packet received or bad data packet format received
