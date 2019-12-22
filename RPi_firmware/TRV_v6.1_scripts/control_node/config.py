@@ -5,7 +5,7 @@
 # back to the server, and sets automation scripts on the node.
 
 # Developed by Akram Ali
-# Last updated on: 12/18/2019
+# Last updated on: 12/22/2019
 
 import os
 import requests
@@ -13,8 +13,9 @@ import json
 import time
 import socket
 import subprocess
+from pathlib import Path
 
-get_url = 'http://config.elemental-platform.com/wp-json/acf/v3/nodes?slug='
+get_url = 'http://config.elemental-platform.com/wp-json/acf/v3/nodes?slug[]='
 put_url = 'http://config.elemental-platform.com/wp-json/acf/v3/nodes/'
 auth = ('node', 'vvET(G6^kmkhx)l!!Zqnd@)^')
 
@@ -37,11 +38,12 @@ network_info = {
 	}
 }
 
-time.sleep(5)
+time.sleep(5)	# give some time for wifi to connect and everything to load and settle down
 
 # get node configuration from server
 def get_config():
 	global wp_id
+
 	attempts = 0
 	while attempts < 3:
 		try:
@@ -116,6 +118,13 @@ def load_old_config():
 			time.sleep(0.1)
 	return data
 
+# delete old config files
+def del_file(_file):
+	fn = '%s/%s' % (control_node_id_dir, _file)
+	my_file = Path(fn)
+	if my_file.is_file():   # check if files exist
+		os.remove(fn)   # delete file
+
 # check and set control strategy
 def set_control_strategy(_config):
 	if 'control_strategy' in _config[0]['acf']:
@@ -153,8 +162,15 @@ def set_preheat(_config):
 			os.system("sudo sed -i '/preheat/s/^/#/' /etc/rc.local")	# comment preheat
 
 
+
+# clear old config files on boot
+del_file('config.json')
+del_file('_config.json')
+
 # get initial settings from server and return mac and ip address
-get_config()
+response = get_config()
+save_config(response.json())
+save_old_config(response.json())
 put_config()
 
 # loop forever and keep checking for updated config
