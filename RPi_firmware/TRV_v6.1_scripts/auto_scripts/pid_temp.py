@@ -33,7 +33,7 @@ setpoint = 75 # starting set temperature
 pid.sample_time = 60  # update every 60 seconds
 pid.output_limits = (-200, 200)    # output value will be between -200 and 200
 
-time.sleep(1)   # sleep a bit initially
+time.sleep(10)   # sleep a bit initially
 
 # read config json file
 def load_config():

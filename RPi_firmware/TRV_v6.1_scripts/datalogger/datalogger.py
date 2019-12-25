@@ -1,5 +1,5 @@
 # realtime data logger script by AKstudios
-# Updated on 11/5/2018
+# Updated on 12/24/2019
 
 from datetime import datetime
 from pathlib import Path
@@ -32,7 +32,7 @@ try:
 except:
     pass
 
-time.sleep(5)
+time.sleep(60) # sleep 60 seconds to let data come in first
 
 # function to find, parse, log data files
 def logdata(_dt,_temp_data):
@@ -103,8 +103,6 @@ def logdata(_dt,_temp_data):
 while True:
      # this will log data every second
     for i in range(0,60):
-        # read all temp file names every loop to check for new ones
-        temp_data = [".".join(f.split(".")[:-1]) for f in os.listdir(temp_data_dir)]
 
         flag = None
         while flag is None:     # keep trying to match seconds with real time
@@ -119,6 +117,8 @@ while True:
                 pass
 
         if int(second) == 0 and flag == 1:
+            # read all temp file names every loop to check for new ones
+            temp_data = [".".join(f.split(".")[:-1]) for f in os.listdir(temp_data_dir)]
             if len(temp_data) != 0:
                 logdata(dt,temp_data)
         else:

@@ -19,7 +19,7 @@ def parse(data):
     except:
         return 0
 
-time.sleep(5)
+time.sleep(0.2)
 
 id = 0
 try:

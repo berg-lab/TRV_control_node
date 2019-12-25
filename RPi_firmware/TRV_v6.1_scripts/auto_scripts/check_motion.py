@@ -26,7 +26,7 @@ check_motion_setpoint = 4
 check_motion_min_temp = 70
 check_motion_temp_setpoint = 75
 
-time.sleep(1)   # wait a bit so other scripts can start running first
+time.sleep(10)   # wait a bit so other scripts can start running first
 
 # read config json file
 def load_config():

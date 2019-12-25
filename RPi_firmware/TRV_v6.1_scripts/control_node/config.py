@@ -5,7 +5,7 @@
 # back to the server, and sets automation scripts on the node.
 
 # Developed by Akram Ali
-# Last updated on: 12/22/2019
+# Last updated on: 12/24/2019
 
 import os
 import requests
@@ -38,7 +38,7 @@ network_info = {
 	}
 }
 
-time.sleep(5)	# give some time for wifi to connect and everything to load and settle down
+time.sleep(1)	# give some time for wifi to connect and everything to load and settle down
 
 # get node configuration from server
 def get_config():
@@ -53,6 +53,7 @@ def get_config():
 		except requests.exceptions.RequestException as e:
 			attempts += 1
 			time.sleep(1)
+			_response = {}	# return empty json file
 	return _response
 
 # send back mac and ip address to server
