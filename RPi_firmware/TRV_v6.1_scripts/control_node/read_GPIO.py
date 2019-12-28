@@ -2,7 +2,7 @@
 
 # Control Node
 # Developed by Akram Ali & Chris Riley
-# Last updated on: 12/18/2019
+# Last updated on: 12/27/2019
 
 version = "v6.1"
 
@@ -63,6 +63,7 @@ def load_config():
         except:
             attempts += 1
             time.sleep(0.1)
+            data = {}
     return data
 
 # get current running scripts
@@ -133,7 +134,7 @@ def read_setpoint():
         return 0
 
 # set new setpoint in file
-def save_setpoint(_s, pid_flag):
+def save_setpoint(_s, pid_flag, cmd):
     if pid_flag is True:
         pid = get_pid_output()
     elif pid_flag is False:
@@ -141,7 +142,10 @@ def save_setpoint(_s, pid_flag):
 
     try:
         file = open('%s/%s.csv' % (temp_data_dir, node_ID[0]),'w')        # save data in file
-        file.write("i:%s,y:%s,u:1,w:%s" % (node_ID[0], str(_s), str(pid)))
+        if cmd == 'start':
+            file.write("i:%s,y:%s,u:0,w:%s" % (node_ID[0], str(_s), str(pid)))  # start with no manual override
+        elif cmd == 'button_press':
+            file.write("i:%s,y:%s,u:1,w:%s" % (node_ID[0], str(_s), str(pid)))
         file.close()
     except:
         pass
@@ -335,10 +339,10 @@ config_display_text()
 # display initial values on screen
 if config[0]['acf']['control_strategy'] == 'pid_temp' or config[0]['acf']['control_strategy'] == 'pid_temp_motion':
     s = temp_setpoint
-    save_setpoint(s, True)
+    save_setpoint(s, True, 'start')
 else:
     s = num_setpoint
-    save_setpoint(s, False)
+    save_setpoint(s, False, 'start')
 setpoint_display(s)
 temp = read_temp()
 update_screen(s, temp)      
@@ -365,10 +369,10 @@ while True:
         temp = read_temp()
         setpoint_display(s)
         update_screen(s, temp)
-        if config[0]['acf']['control_strategy'] == 'pid_temp' or config[0]['acf']['control_strategy'] == 'pid_temp_motion':
-            save_setpoint(s, True)
-        else:
-            save_setpoint(s, False)
+        # if config[0]['acf']['control_strategy'] == 'pid_temp' or config[0]['acf']['control_strategy'] == 'pid_temp_motion':
+        #     save_setpoint(s, True, 'button_press')
+        # else:
+        #     save_setpoint(s, False, 'button_press')
     else:
         pass
 
@@ -377,11 +381,11 @@ while True:
         if config[0]['acf']['control_strategy'] == 'pid_temp' or config[0]['acf']['control_strategy'] == 'pid_temp_motion':
             temp_setpoint -= 1
             setpoint_display(temp_setpoint)
-            save_setpoint(temp_setpoint, True)
+            save_setpoint(temp_setpoint, True, 'button_press')
         else:
             num_setpoint -= 1
             setpoint_display(num_setpoint)
-            save_setpoint(num_setpoint, False)
+            save_setpoint(num_setpoint, False, 'button_press')
         
         s = read_setpoint()
         temp = read_temp()
@@ -392,11 +396,11 @@ while True:
         if config[0]['acf']['control_strategy'] == 'pid_temp' or config[0]['acf']['control_strategy'] == 'pid_temp_motion':
             temp_setpoint += 1
             setpoint_display(temp_setpoint)
-            save_setpoint(temp_setpoint, True)
+            save_setpoint(temp_setpoint, True, 'button_press')
         else:
             num_setpoint += 1
             setpoint_display(num_setpoint)
-            save_setpoint(num_setpoint, False)
+            save_setpoint(num_setpoint, False, 'button_press')
 
         s = read_setpoint()
         temp = read_temp()
