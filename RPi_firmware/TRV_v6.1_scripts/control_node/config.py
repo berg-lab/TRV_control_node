@@ -5,7 +5,7 @@
 # back to the server, and sets automation scripts on the node.
 
 # Developed by Akram Ali
-# Last updated on: 12/24/2019
+# Last updated on: 12/29/2019
 
 import os
 import requests
@@ -21,6 +21,7 @@ auth = ('node', 'vvET(G6^kmkhx)l!!Zqnd@)^')
 
 control_strategies = ['manual', 'enforced_schedule', 'check_motion', 'pid_temp', 'pid_temp_motion']
 reboot_flag = False
+put_config_flag = False
 
 control_node_id_dir = '/home/pi/control_node'
 json_dir = '/home/pi/control_node/'
@@ -38,7 +39,7 @@ network_info = {
 	}
 }
 
-time.sleep(1)	# give some time for wifi to connect and everything to load and settle down
+time.sleep(0.1)	# give some time for wifi to connect and everything to load and settle down
 
 # get node configuration from server
 def get_config():
@@ -67,6 +68,7 @@ def put_config():
 		except requests.exceptions.RequestException as e:
 			attempts += 1
 			time.sleep(1)
+			_response = {}
 	return _response
 
 # save config json file
@@ -165,22 +167,28 @@ def set_preheat(_config):
 
 
 # clear old config files on boot
-del_file('config.json')
-del_file('_config.json')
+# del_file('config.json')
+# del_file('_config.json')
 
 # get initial settings from server and return mac and ip address
 response = get_config()
-save_config(response.json())
-save_old_config(response.json())
-put_config()
+if response:
+	save_config(response.json())
+	save_old_config(response.json())
 
 # loop forever and keep checking for updated config
 while True:
-	time.sleep(10)      # sleep few secs to let other stuff run in bg
 	response = get_config()
-	save_config(response.json())
+	if response:
+		save_config(response.json())
 	config = load_config()
 	old_config = load_old_config()
+
+	if not put_config_flag:
+		put_response = put_config()
+		if put_response:
+			put_config_flag = True
+
 
 	if 'control_strategy' in config[0]['acf']:
 		new_control_strategy = config[0]['acf']['control_strategy']
@@ -225,10 +233,13 @@ while True:
 					time.sleep(1)
 
 	# rewrite old config with new config
-	save_old_config(response.json())
+	if response:
+		save_old_config(response.json())
 
 	# reboot device to apply new control strategy & preheat settings
 	if reboot_flag:
 		os.system("sudo reboot")
 	else:
 		pass
+
+	time.sleep(10)      # sleep few secs to let other stuff run in bg
