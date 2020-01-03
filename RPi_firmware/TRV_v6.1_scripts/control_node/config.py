@@ -1,25 +1,30 @@
 # -*- coding: utf-8 -*-
 
 # This script gets configuration settings for the node from the server
-# and saves it to local JSON file. It also sends back MAC and IP addresses
-# back to the server, and sets automation scripts on the node.
+# and saves it to local JSON file. It also sends back MAC and IP addresses,
+# along with current date time and running scripts back to the server,
+# and sets automation scripts on the node.
 
 # Developed by Akram Ali
-# Last updated on: 12/29/2019
+# Last updated on: 01/03/2020
 
 import os
 import requests
 import json
 import time
 import socket
+import shlex
 import subprocess
 from pathlib import Path
+from datetime import datetime
 
 get_url = 'http://config.elemental-platform.com/wp-json/acf/v3/nodes?slug[]='
 put_url = 'http://config.elemental-platform.com/wp-json/acf/v3/nodes/'
 auth = ('node', 'vvET(G6^kmkhx)l!!Zqnd@)^')
 
 control_strategies = ['manual', 'enforced_schedule', 'check_motion', 'pid_temp', 'pid_temp_motion']
+scripts = ['config','read_GPIO', 'read_serial', 'write_serial','set_PWM','datalogger',
+'monitor_core_temp','preheat','enforce_schedule','check_motion','pid_temp'] # set all scripts to check if they're running
 reboot_flag = False
 put_config_flag = False
 
@@ -32,14 +37,33 @@ wp_id = 0
 mac = subprocess.check_output('cat /sys/class/net/wlan0/address', shell=True).strip()
 ip = subprocess.check_output('hostname -I', shell=True).strip()
 
-network_info = {
-	"fields": {
-		"mac_address": mac,
-		"ip_address": ip
-	}
-}
 
 time.sleep(0.1)	# give some time for wifi to connect and everything to load and settle down
+# get current running scripts
+def get_running_scripts():
+    PIDs=[]
+    script_status=[]
+    ss = ''
+    for s in scripts:
+        cmd = "pgrep -f 'python %s.py'" % s
+        try:
+            output = subprocess.check_output(shlex.split(cmd), shell=False).decode("utf-8")
+        except subprocess.CalledProcessError:
+            output = ''
+        PIDs.append(output)
+        time.sleep(0.01)
+    n=0
+
+    for p in PIDs:
+        n+=1
+        if n == 6 or n == 8:
+            script_status.append(' ')
+        if p == '':
+            script_status.append('0')
+        else:
+            script_status.append('1')
+    ss = ''.join(script_status)
+    return ss
 
 # get node configuration from server
 def get_config():
@@ -58,18 +82,45 @@ def get_config():
 	return _response
 
 # send back mac and ip address to server
-def put_config():
+def put_config(put_type):
 	global wp_id
+	global mac
+	global ip
+
+	running_scripts = get_running_scripts()
+	last_updated = str(datetime.now().strftime('%Y/%m/%d %H:%M:%S'))
+
+	network_info = {
+		"fields": {
+			"mac_address": mac,
+			"ip_address": ip
+		}
+	}
+
+	status = {
+		"fields": {
+			"last_updated": last_updated,
+			"running_scripts": running_scripts
+		}
+	}
+
+	if put_type == 'network':
+		json_body = network_info
+	elif put_type == 'status':
+		json_body = status
+
 	attempts = 0
 	while attempts < 3:
 		try:
-			_response = requests.put(put_url+str(wp_id), json=network_info, auth=auth)
+			_response = requests.put(put_url+str(wp_id), json=json_body, auth=auth)
 			break
 		except requests.exceptions.RequestException as e:
 			attempts += 1
 			time.sleep(1)
 			_response = {}
 	return _response
+	
+	
 
 # save config json file
 def save_config(response_json):
@@ -176,8 +227,14 @@ if response:
 	save_config(response.json())
 	save_old_config(response.json())
 
+current_time = time.time()
+old_time = time.time()
+
 # loop forever and keep checking for updated config
 while True:
+	# keep track of time
+	current_time = time.time()
+	
 	response = get_config()
 	if response:
 		save_config(response.json())
@@ -185,7 +242,7 @@ while True:
 	old_config = load_old_config()
 
 	if not put_config_flag:
-		put_response = put_config()
+		put_response = put_config('network')
 		if put_response:
 			put_config_flag = True
 
@@ -241,5 +298,11 @@ while True:
 		os.system("sudo reboot")
 	else:
 		pass
+	
+	# update node status every hour
+	if current_time - old_time >= 3600:
+		old_time = time.time()
+		put_config('status')
+		time.sleep(1)
 
 	time.sleep(10)      # sleep few secs to let other stuff run in bg
