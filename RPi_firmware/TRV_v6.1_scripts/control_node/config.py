@@ -6,7 +6,7 @@
 # and sets automation scripts on the node.
 
 # Developed by Akram Ali
-# Last updated on: 01/03/2020
+# Last updated on: 01/05/2020
 
 import os
 import requests
@@ -113,6 +113,7 @@ def put_config(put_type):
 	while attempts < 3:
 		try:
 			_response = requests.put(put_url+str(wp_id), json=json_body, auth=auth)
+			time.sleep(1)
 			break
 		except requests.exceptions.RequestException as e:
 			attempts += 1
@@ -242,8 +243,9 @@ while True:
 	old_config = load_old_config()
 
 	if not put_config_flag:
-		put_response = put_config('network')
-		if put_response:
+		put_response_network = put_config('network')
+		put_response_status = put_config('status')
+		if put_response_network and put_response_status:
 			put_config_flag = True
 
 
