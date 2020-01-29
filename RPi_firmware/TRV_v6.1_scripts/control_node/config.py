@@ -6,7 +6,7 @@
 # and sets automation scripts on the node.
 
 # Developed by Akram Ali
-# Last updated on: 01/05/2020
+# Last updated on: 01/29/2020
 
 import os
 import requests
@@ -18,6 +18,7 @@ import subprocess
 from pathlib import Path
 from datetime import datetime
 
+url = 'config.elemental-platform.com'
 get_url = 'http://config.elemental-platform.com/wp-json/acf/v3/nodes?slug[]='
 put_url = 'http://config.elemental-platform.com/wp-json/acf/v3/nodes/'
 auth = ('node', 'vvET(G6^kmkhx)l!!Zqnd@)^')
@@ -39,6 +40,18 @@ ip = subprocess.check_output('hostname -I', shell=True).strip()
 
 
 time.sleep(0.1)	# give some time for wifi to connect and everything to load and settle down
+
+# check internet connection
+def internet_connection():
+	try:
+		host = socket.gethostbyname(url)
+		s = socket.create_connection((host, 80), 2)
+		s.close()
+		return True
+	except:
+		pass
+	return False
+
 # get current running scripts
 def get_running_scripts():
     PIDs=[]
@@ -223,10 +236,11 @@ def set_preheat(_config):
 # del_file('_config.json')
 
 # get initial settings from server and return mac and ip address
-response = get_config()
-if response:
-	save_config(response.json())
-	save_old_config(response.json())
+if internet_connection() is True:
+	response = get_config()
+	if response:
+		save_config(response.json())
+		save_old_config(response.json())
 
 current_time = time.time()
 old_time = time.time()
@@ -236,75 +250,76 @@ while True:
 	# keep track of time
 	current_time = time.time()
 	
-	response = get_config()
-	if response:
-		save_config(response.json())
-	config = load_config()
-	old_config = load_old_config()
+	if internet_connection() is True:
+		response = get_config()
+		if response:
+			save_config(response.json())
+		config = load_config()
+		old_config = load_old_config()
 
-	if not put_config_flag:
-		put_response_network = put_config('network')
-		put_response_status = put_config('status')
-		if put_response_network and put_response_status:
-			put_config_flag = True
+		if not put_config_flag:
+			put_response_network = put_config('network')
+			put_response_status = put_config('status')
+			if put_response_network and put_response_status:
+				put_config_flag = True
 
 
-	if 'control_strategy' in config[0]['acf']:
-		new_control_strategy = config[0]['acf']['control_strategy']
-		old_control_strategy = old_config[0]['acf']['control_strategy']
+		if 'control_strategy' in config[0]['acf']:
+			new_control_strategy = config[0]['acf']['control_strategy']
+			old_control_strategy = old_config[0]['acf']['control_strategy']
 
-		if old_control_strategy != new_control_strategy:
-			set_control_strategy(config)
-			reboot_flag = True
-		else:
-			pass
-	
-	if 'preheat' in config[0]['acf']:
-		new_preheat = config[0]['acf']['preheat']
-		old_preheat = old_config[0]['acf']['preheat']
-
-		if new_preheat != old_preheat:
-			set_preheat(config)
-			reboot_flag = True
-		else:
-			pass
-	
-	if 'override_setpoint' in config[0]['acf']:
-		if config[0]['acf']['override_setpoint'] is True:
-			control_strategy = config[0]['acf']['control_strategy']
-			if control_strategy == control_strategies[3] or control_strategy == control_strategies[4]:
-				setpoint = config[0]['acf']['override_setpoint_temp_value']
+			if old_control_strategy != new_control_strategy:
+				set_control_strategy(config)
+				reboot_flag = True
 			else:
-				setpoint = config[0]['acf']['override_setpoint_value']
-			os.system("sudo python %s/setpoint_override.py %s" % (control_node_id_dir, setpoint))	# set the override setpoint value in file
-			setpoint_json = {
-				"fields": {
-					"override_setpoint": False
+				pass
+		
+		if 'preheat' in config[0]['acf']:
+			new_preheat = config[0]['acf']['preheat']
+			old_preheat = old_config[0]['acf']['preheat']
+
+			if new_preheat != old_preheat:
+				set_preheat(config)
+				reboot_flag = True
+			else:
+				pass
+		
+		if 'override_setpoint' in config[0]['acf']:
+			if config[0]['acf']['override_setpoint'] is True:
+				control_strategy = config[0]['acf']['control_strategy']
+				if control_strategy == control_strategies[3] or control_strategy == control_strategies[4]:
+					setpoint = config[0]['acf']['override_setpoint_temp_value']
+				else:
+					setpoint = config[0]['acf']['override_setpoint_value']
+				os.system("sudo python %s/setpoint_override.py %s" % (control_node_id_dir, setpoint))	# set the override setpoint value in file
+				setpoint_json = {
+					"fields": {
+						"override_setpoint": False
+					}
 				}
-			}
-			attempts = 0
-			while attempts < 3:
-				try:
-					requests.put(put_url+str(wp_id), json=setpoint_json, auth=auth)
-					break
-				except requests.exceptions.RequestException as e:
-					attempts += 1
-					time.sleep(1)
+				attempts = 0
+				while attempts < 3:
+					try:
+						requests.put(put_url+str(wp_id), json=setpoint_json, auth=auth)
+						break
+					except requests.exceptions.RequestException as e:
+						attempts += 1
+						time.sleep(1)
 
-	# rewrite old config with new config
-	if response:
-		save_old_config(response.json())
+		# rewrite old config with new config
+		if response:
+			save_old_config(response.json())
 
-	# reboot device to apply new control strategy & preheat settings
-	if reboot_flag:
-		os.system("sudo reboot")
-	else:
-		pass
-	
-	# update node status every hour
-	if current_time - old_time >= 3600:
-		old_time = time.time()
-		put_config('status')
-		time.sleep(1)
+		# reboot device to apply new control strategy & preheat settings
+		if reboot_flag:
+			os.system("sudo reboot")
+		else:
+			pass
+		
+		# update node status every hour
+		if current_time - old_time >= 3600:
+			old_time = time.time()
+			put_config('status')
+			time.sleep(1)
 
-	time.sleep(10)      # sleep few secs to let other stuff run in bg
+	time.sleep(30)      # sleep few secs to let other stuff run in bg
