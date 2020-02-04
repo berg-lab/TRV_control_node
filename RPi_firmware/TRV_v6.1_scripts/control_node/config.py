@@ -6,7 +6,7 @@
 # and sets automation scripts on the node.
 
 # Developed by Akram Ali
-# Last updated on: 01/29/2020
+# Last updated on: 02/04/2020
 
 import os
 import requests
@@ -36,7 +36,7 @@ node_id = [".".join(f.split(".")[:-1]) for f in os.listdir(control_node_id_dir) 
 wp_id = 0
 
 mac = subprocess.check_output('cat /sys/class/net/wlan0/address', shell=True).strip()
-ip = subprocess.check_output('hostname -I', shell=True).strip()
+ip = subprocess.check_output("hostname -I | cut -d' ' -f1", shell=True).strip()
 
 
 time.sleep(0.1)	# give some time for wifi to connect and everything to load and settle down
