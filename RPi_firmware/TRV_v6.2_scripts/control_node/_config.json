@@ -1,0 +1,17 @@
+[
+    {
+        "id": 200, 
+        "acf": {
+            "name": "John Doe", 
+            "ip_address": "192.168.0.200", 
+            "servo_type": "normal", 
+            "control_strategy": "manual", 
+            "screen_rotation": "normal", 
+            "override_setpoint": false, 
+            "node_type": "control", 
+            "mac_address": "00:00:00:00:00:00", 
+            "control_node_type": "radiator", 
+            "room": 200
+        }
+    }
+]
