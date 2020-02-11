@@ -1,5 +1,5 @@
 # realtime data logger script by AKstudios
-# Updated on 02/10/2020
+# Updated on 02/11/2020
 
 from datetime import datetime
 from pathlib import Path
@@ -17,12 +17,12 @@ control_node_id_dir = '/home/pi/control_node'
 
 node_ID = [".".join(f.split(".")[:-1]) for f in os.listdir(control_node_id_dir) if f.endswith(".node")]    # get node ID
 
-# delete old temp csv files initially to allow only new data to be saved
-for f in os.listdir(temp_data_dir):
-    fn = '%s/%s' % (temp_data_dir,f)
-    my_file = Path(fn)
-    if my_file.is_file():   # check if files exist
-        os.remove(fn)   # delete file
+# # delete old temp csv files initially to allow only new data to be saved
+# for f in os.listdir(temp_data_dir):
+#     fn = '%s/%s' % (temp_data_dir,f)
+#     my_file = Path(fn)
+#     if my_file.is_file():   # check if files exist
+#         os.remove(fn)   # delete file
 
 # create a temp motion file initialized with no motion first to allow other scripts to work
 try:

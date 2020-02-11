@@ -34,7 +34,9 @@ pid.sample_time = 60  # update every 60 seconds
 pid.output_limits = (-200, 200)    # output value will be between -200 and 200
 pid_temp_offset = 0.1   # default offset
 
-time.sleep(10)   # sleep a bit initially
+read_setpoint()  # get latest setpoint
+
+time.sleep(5)   # sleep a bit initially
 
 # read config json file
 def load_config():
