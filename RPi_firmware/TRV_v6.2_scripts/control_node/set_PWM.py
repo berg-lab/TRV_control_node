@@ -4,7 +4,7 @@
 # Honeywell thermostatic radiator valve control unit T100B1035/T104B1038
 
 # Developed by Akram Ali
-# Last updated on: 12/16/2019
+# Last updated on: 02/13/2019
 
 import Adafruit_PCA9685
 import time
@@ -66,10 +66,12 @@ while True:
         s_start = 600
         s_end = 130
 
+    setpoint_step_size = config[0]['acf']['setpoint_step_size']
+
     # create list with PWM values
     pwm_list=[]
-    step = int(round(s_start-s_end)/6)     # step size
-    for n in range(7):
+    step = int(round(s_start-s_end)/int(setpoint_step_size-1))     # step size
+    for n in range(int(setpoint_step_size)):
         value = s_start - (step*n)  # increment steps 
         if abs(value-s_end) <= 3:   # i.e., if value is close to end value
             pwm_list.append(s_end)

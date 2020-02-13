@@ -138,7 +138,7 @@ def update_PID_params():
         pid_temp_offset = int(config[0]['acf']['pid_temp_offset'])
         pid_temp_sleep_interval = int(config[0]['acf']['pid_temp_sleep_interval'])
 
-        pid = PID(kp, ki, kd)
+        pid.tunings = (kp, ki, kd)
         pid.sample_time = sample_time  # update every 60 seconds
         pid.output_limits = (pid_lower_limit, pid_upper_limit)    # output value will be between -200 and 200
 

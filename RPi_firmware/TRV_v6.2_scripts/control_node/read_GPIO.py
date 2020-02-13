@@ -2,7 +2,7 @@
 
 # Control Node
 # Developed by Akram Ali & Chris Riley
-# Last updated on: 02/11/2020
+# Last updated on: 02/13/2020
 
 version = "v6.2"
 
@@ -38,6 +38,9 @@ temp = 0.0
 s = 0
 num_setpoint = 0   # initial setpoint
 temp_setpoint = 72  # initial setpoint
+temp_upper_limit = 90
+temp_lower_limit = 55
+setpoint_step_size = 7
 button1 = 5
 button2 = 6
 screen_rotation_flag = False
@@ -167,18 +170,27 @@ def setpoint_display(_s):
     global displayed_s
     global num_setpoint
     global temp_setpoint
+    global config
+    global temp_upper_limit
+    global temp_lower_limit
+    global setpoint_step_size
 
     degree = u"\u00b0"      # degree symbol
 
+    temp_upper_limit = config[0]['acf']['temp_upper_limit']
+    temp_lower_limit = config[0]['acf']['temp_lower_limit']
+    setpoint_step_size = config[0]['acf']['setpoint_step_size']
+    max_setpoint = int(setpoint_step_size) - 1
+
     if config[0]['acf']['control_strategy'] == 'pid_temp' or config[0]['acf']['control_strategy'] == 'pid_temp_motion':
         displayed_s = str(int(_s)) + degree + "F"  # add degree symbol
-        if _s <= 60:
+        if _s <= temp_lower_limit:
             displayed_s = "MIN"
-            temp_setpoint = 60
-        elif _s >= 90:
+            temp_setpoint = temp_lower_limit
+        elif _s >= temp_upper_limit:
             displayed_s = "MAX"
-            temp_setpoint = 90
-        elif 60 < _s < 90:
+            temp_setpoint = temp_upper_limit
+        elif temp_lower_limit < _s < temp_upper_limit:
             temp_setpoint = _s
 
     else:
@@ -186,10 +198,10 @@ def setpoint_display(_s):
         if _s <= 0:
             displayed_s = "MIN"
             num_setpoint = 0
-        elif _s >= 6:
+        elif _s >= max_setpoint:
             displayed_s = "MAX"
-            num_setpoint = 6
-        elif 0 < _s < 6:
+            num_setpoint = max_setpoint
+        elif 0 < _s < max_setpoint:
             num_setpoint = _s
 
 
