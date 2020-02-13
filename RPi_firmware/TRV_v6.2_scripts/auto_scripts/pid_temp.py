@@ -4,7 +4,7 @@
 # The output is servo setpoint values
 
 # Developed by Akram Ali
-# Last updated on: 02/11/2020
+# Last updated on: 02/13/2020
 
 from pathlib import Path
 import Adafruit_PCA9685
@@ -126,6 +126,7 @@ def set_new_PWM(output, current_temp):
 # get latest parameters for the PID function from the config file
 def update_PID_params():
     global pid_temp_sleep_interval
+    global pid_temp_offset
 
     if config[0]['acf']['control_strategy'] == 'pid_temp' or config[0]['acf']['control_strategy'] == 'pid_temp_motion':
         kp = float(config[0]['acf']['proportional_gain'])
