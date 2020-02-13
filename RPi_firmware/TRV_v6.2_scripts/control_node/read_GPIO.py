@@ -177,12 +177,10 @@ def setpoint_display(_s):
 
     degree = u"\u00b0"      # degree symbol
 
-    temp_upper_limit = config[0]['acf']['temp_upper_limit']
-    temp_lower_limit = config[0]['acf']['temp_lower_limit']
-    setpoint_step_size = config[0]['acf']['setpoint_step_size']
-    max_setpoint = int(setpoint_step_size) - 1
-
     if config[0]['acf']['control_strategy'] == 'pid_temp' or config[0]['acf']['control_strategy'] == 'pid_temp_motion':
+        temp_upper_limit = config[0]['acf']['temp_upper_limit']
+        temp_lower_limit = config[0]['acf']['temp_lower_limit']
+
         displayed_s = str(int(_s)) + degree + "F"  # add degree symbol
         if _s <= temp_lower_limit:
             displayed_s = "MIN"
@@ -194,6 +192,9 @@ def setpoint_display(_s):
             temp_setpoint = _s
 
     else:
+        setpoint_step_size = config[0]['acf']['setpoint_step_size']
+        max_setpoint = int(setpoint_step_size) - 1
+
         displayed_s = str(_s)
         if _s <= 0:
             displayed_s = "MIN"

@@ -135,7 +135,7 @@ def update_PID_params():
         sample_time = int(config[0]['acf']['pid_sample_time'])
         pid_lower_limit = int(config[0]['acf']['pid_lower_limit'])
         pid_upper_limit = int(config[0]['acf']['pid_upper_limit'])
-        pid_temp_offset = int(config[0]['acf']['pid_temp_offset'])
+        pid_temp_offset = float(config[0]['acf']['pid_temp_offset'])
         pid_temp_sleep_interval = int(config[0]['acf']['pid_temp_sleep_interval'])
 
         pid.tunings = (kp, ki, kd)
