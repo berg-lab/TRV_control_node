@@ -178,8 +178,8 @@ def setpoint_display(_s):
     degree = u"\u00b0"      # degree symbol
 
     if config[0]['acf']['control_strategy'] == 'pid_temp' or config[0]['acf']['control_strategy'] == 'pid_temp_motion':
-        temp_upper_limit = config[0]['acf']['temp_upper_limit']
-        temp_lower_limit = config[0]['acf']['temp_lower_limit']
+        temp_upper_limit = int(config[0]['acf']['temp_upper_limit'])
+        temp_lower_limit = int(config[0]['acf']['temp_lower_limit'])
 
         displayed_s = str(int(_s)) + degree + "F"  # add degree symbol
         if _s <= temp_lower_limit:
