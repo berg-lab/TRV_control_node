@@ -66,7 +66,7 @@ while True:
         s_start = 600
         s_end = 130
 
-    setpoint_step_size = config[0]['acf']['setpoint_step_size']
+    setpoint_step_size = int(config[0]['acf']['setpoint_step_size'])
 
     # create list with PWM values
     pwm_list=[]
