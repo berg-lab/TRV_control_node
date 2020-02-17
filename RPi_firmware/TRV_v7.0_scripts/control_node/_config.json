@@ -1,17 +1,37 @@
 [
     {
-        "id": 200, 
+        "id": 200,
         "acf": {
-            "name": "John Doe", 
-            "ip_address": "192.168.0.200", 
-            "servo_type": "normal", 
-            "control_strategy": "manual", 
-            "screen_rotation": "normal", 
-            "override_setpoint": false, 
-            "node_type": "control", 
-            "mac_address": "00:00:00:00:00:00", 
-            "control_node_type": "radiator", 
-            "room": 200
+            "name": "John Doe",
+            "room": 200,
+            "ip_address": "192.168.0.200",
+            "mac_address": "00:00:00:00:00:00",
+            "node_type": "control",
+            "control_node_type": "radiator",
+            "servo_type": "normal",
+            "screen_rotation": "normal",
+            "control_strategy": "manual",
+            "override_setpoint": false,
+            "override_setpoint_value": "0",
+            "proportional_gain": "1",
+            "integral_gain": "0.1",
+            "derivative_gain": "0.05",
+            "pid_sample_time": "60",
+            "pid_lower_limit": "-200",
+            "pid_upper_limit": "200",
+            "pid_temp_sleep_interval": "30",
+            "check_motion_timeout": "30",
+            "check_motion_temp_setpoint": "75",
+            "check_motion_min_temp": "70",
+            "check_motion_off_temp": "55",
+            "reboot": false,
+            "pid_temp_offset": "0.5",
+            "temp_upper_limit": "90",
+            "temp_lower_limit": "55",
+            "preheat": false,
+            "setpoint_step_size": "7",
+            "check_motion_value": "custom",
+            "check_motion_setpoint": "4"
         }
     }
 ]
