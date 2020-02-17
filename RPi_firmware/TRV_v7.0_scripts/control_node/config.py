@@ -126,8 +126,8 @@ def put_config(put_type):
 	elif config[0]['acf']['servo_type'] == 'special_servo':
 		s_start = 600
 		s_end = 130
-	pwm_percent = int((1 - ((int(pwm) - s_end)/(s_start - s_end))) * 100)
-	current_valve_position = '%s (%s%%)' % (str(pwm), str(pwm_percent))
+	pwm_percent = round((1 - ((float(pwm) - s_end)/(s_start - s_end))) * 100)
+	current_valve_position = "%s%% (%s)" % (str(int(pwm_percent)), pwm)
 
 	network_info = {
 		"fields": {
@@ -412,13 +412,18 @@ while True:
 		else:
 			pass
 		
-		# update node status every hour
+		# update node status every 10 mins
+		if current_time - old_time >= 600:
+			old_time = time.time()
+			put_response_status = put_config('status')
+			time.sleep(1)
+		
+		# update node network details every hour
 		if current_time - old_time >= 3600:
 			old_time = time.time()
 			ip = get_ip_address()
 			if ip is not None or ip != '':
 				put_response_network = put_config('network')
-			put_response_status = put_config('status')
 			time.sleep(1)
 
 	time.sleep(30)      # sleep few secs to let other stuff run in bg

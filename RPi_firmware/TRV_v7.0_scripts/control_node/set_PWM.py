@@ -18,7 +18,7 @@ pwm.set_pwm_freq(60)        # Set frequency to 60hz, good for servos.
 s_start = 635   # initialize servo PWM ranges as normal (130-600 is for special servo)
 s_end = 150
 setpoint = 0
-pwm_value = 0
+pwm_value = 400
 
 # set all temporary directories
 temp_data_dir = '/home/pi/datalogger/temp_data'

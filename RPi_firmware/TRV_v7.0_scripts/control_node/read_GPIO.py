@@ -139,7 +139,6 @@ def read_setpoint():
 # set new setpoint in file
 def save_setpoint(_s, cmd):
     pwm = get_pwm()
-
     try:
         file = open('%s/%s.csv' % (temp_data_dir, node_ID[0]),'w')        # save data in file
         if cmd == 'start':
@@ -400,9 +399,10 @@ while True:
     # if 60 seconds have passed, save setpoint info to temp file
     if current_time - old_time_60 >= 60:
         old_time_60 = time.time()
-        s = read_setpoint()
-        temp = read_temp()
-        save_setpoint(temp_setpoint, 'save_data')
+        if config[0]['acf']['control_strategy'] == 'pid_temp' or config[0]['acf']['control_strategy'] == 'pid_temp_motion':
+            save_setpoint(temp_setpoint, 'save_data')
+        else:
+            save_setpoint(num_setpoint, 'save_data')
     else:
         pass
 
