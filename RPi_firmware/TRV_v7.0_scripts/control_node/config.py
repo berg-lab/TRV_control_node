@@ -126,7 +126,7 @@ def put_config(put_type):
 	elif config[0]['acf']['servo_type'] == 'special_servo':
 		s_start = 600
 		s_end = 130
-	pwm_percent = int((1 - ((int(pwm) - s_end)/(s_start - s_end))) * 100)
+	pwm_percent = round((1 - ((int(pwm) - s_end)/(s_start - s_end))) * 100)
 	current_valve_position = '%s (%s%%)' % (str(pwm), str(pwm_percent))
 
 	network_info = {

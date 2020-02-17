@@ -27,6 +27,7 @@ node_ID = [".".join(f.split(".")[:-1]) for f in os.listdir(control_node_id_dir) 
 pwm = Adafruit_PCA9685.PCA9685()        # create Adafruit library object
 pwm.set_pwm_freq(60)        # Set frequency to 60hz, good for servos.
 
+pid_temp = 75
 pid_temp_sleep_interval = 30    # default sleep interval for script
 pid = PID(1, 0.1, 0.05)
 sp = 400    # starting setpoint
