@@ -31,6 +31,7 @@ put_config_flag = False
 
 control_node_id_dir = '/home/pi/control_node'
 json_dir = '/home/pi/control_node/'
+temp_data_dir = '/home/pi/datalogger/temp_data'
 
 node_id = [".".join(f.split(".")[:-1]) for f in os.listdir(control_node_id_dir) if f.endswith(".node")]    # get node ID
 wp_id = 0
@@ -125,8 +126,8 @@ def put_config(put_type):
 	elif config[0]['acf']['servo_type'] == 'special_servo':
 		s_start = 600
 		s_end = 130
-	pwm_percent = round((1 - ((pwm - s_end)/(s_start - s_end))) * 100)
-	current_valve_position = '%s (%s%%)' % (pwm, pwm_percent)
+	pwm_percent = int((1 - ((int(pwm) - s_end)/(s_start - s_end))) * 100)
+	current_valve_position = '%s (%s%%)' % (str(pwm), str(pwm_percent))
 
 	network_info = {
 		"fields": {
