@@ -9,6 +9,8 @@ import dictionary
 import string
 
 sensorTypes = list(string.ascii_lowercase)  # create list of alphabets that represent sensor types as described in dictionary
+sensorTypes.extend(('#','kp','ki','kd'))    # add extra items
+
 now = datetime.now()   # get current date/time
 logging_start_time = now.strftime('%Y%m%d-%H%M%S')    # format datetime to use in filename
 temp_data_dir = '/home/pi/datalogger/temp_data'
@@ -33,12 +35,12 @@ except:
     pass
 
 # create control node temp data file with setpoint = 0
-try:
-    file = open('%s/%s.csv' % (temp_data_dir, node_ID[0]),'w')        # node ID
-    file.write("i:%s,y:0,u:0,w:0" % node_ID[0])
-    file.close()
-except:
-    pass
+# try:
+#     file = open('%s/%s.csv' % (temp_data_dir, node_ID[0]),'w')        # node ID
+#     file.write("i:%s,y:0,u:0,w:0" % node_ID[0])
+#     file.close()
+# except:
+#     pass
 
 time.sleep(60) # sleep 60 seconds to let data come in first
 
