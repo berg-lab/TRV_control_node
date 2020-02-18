@@ -375,7 +375,7 @@ while True:
 					setpoint = config[0]['acf']['override_setpoint_temp_value']
 				else:
 					setpoint = config[0]['acf']['override_setpoint_value']
-				os.system("sudo python %s/setpoint_override.py %s" % (control_node_id_dir, setpoint))	# set the override setpoint value in file
+				os.system("sudo python %s/setpoint_override.py %s" % (control_node_id_dir, str(setpoint)))	# set the override setpoint value in file
 
 				# change local override flag to False so it does not get stuck in setpoint loop
 				key = 'override_setpoint'
