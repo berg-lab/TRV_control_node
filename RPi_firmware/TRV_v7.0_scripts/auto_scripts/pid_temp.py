@@ -27,6 +27,7 @@ node_ID = [".".join(f.split(".")[:-1]) for f in os.listdir(control_node_id_dir) 
 pwm = Adafruit_PCA9685.PCA9685()        # create Adafruit library object
 pwm.set_pwm_freq(60)        # Set frequency to 60hz, good for servos.
 
+u = 0
 pid_temp = 75
 pid_temp_sleep_interval = 30    # default sleep interval for script
 pid = PID(1, 0.1, 0.05)
@@ -55,6 +56,7 @@ def load_config():
 # get latest setpoint from file
 def read_setpoint():
     global setpoint
+    global u
     try:
         file = open('%s/%s.csv' % (temp_data_dir, node_ID[0]),'r')        # get data from control file
         data = file.readline()
@@ -67,6 +69,7 @@ def read_setpoint():
             k,v = p.split(":")
             parsed_data[k] = v if v else 0.00
         setpoint = int(parsed_data.get('y'))
+        u = parsed_data.get('u')
     except:
         pass
 
@@ -96,6 +99,7 @@ def read_temp():
 #set PWM output of the servo
 def set_new_PWM(output, current_temp):
     global sp
+    global u
     global setpoint
     global config
 
@@ -125,7 +129,7 @@ def set_new_PWM(output, current_temp):
     # save latest PWM value to temp file
     try:
         file = open('%s/%s.csv' % (temp_data_dir, node_ID[0]),'w')
-        file.write("i:%s,y:%s,u:0,w:%s" % (node_ID[0], str(setpoint), str(sp)))
+        file.write("i:%s,y:%s,u:%s,w:%s" % (node_ID[0], str(setpoint), str(u), str(sp)))
         file.close()
     except:
         pass

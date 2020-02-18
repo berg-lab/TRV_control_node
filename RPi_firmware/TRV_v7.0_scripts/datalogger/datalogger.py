@@ -12,7 +12,7 @@ sensorTypes = list(string.ascii_lowercase)  # create list of alphabets that repr
 sensorTypes.extend(('#','kp','ki','kd'))    # add extra items
 
 now = datetime.now()   # get current date/time
-logging_start_time = now.strftime('%Y%m%d-%H%M%S')    # format datetime to use in filename
+logging_start_time = now.strftime('%Y-%m-%d_%H%M%S')    # format datetime to use in filename
 temp_data_dir = '/home/pi/datalogger/temp_data'
 data_dir = '/home/pi/datalogger/data'
 control_node_id_dir = '/home/pi/control_node'

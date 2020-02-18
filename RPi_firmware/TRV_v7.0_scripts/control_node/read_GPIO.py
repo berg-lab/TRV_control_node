@@ -36,6 +36,7 @@ scripts = ['config','read_GPIO', 'read_serial', 'write_serial','set_PWM','datalo
 # initialize global variables
 temp = 0.0
 s = 0
+u = 0
 num_setpoint = 0   # initial setpoint
 temp_setpoint = 72  # initial setpoint
 temp_upper_limit = 90
@@ -138,6 +139,7 @@ def read_setpoint():
 
 # set new setpoint in file
 def save_setpoint(_s, cmd):
+    global u
     pwm = get_pwm()
     try:
         file = open('%s/%s.csv' % (temp_data_dir, node_ID[0]),'w')        # save data in file
@@ -154,6 +156,7 @@ def save_setpoint(_s, cmd):
 
 # get latest PWM output from file
 def get_pwm():
+    global u
     try:
         file = open('%s/%s.csv' % (temp_data_dir, node_ID[0]),'r')
         data = file.readline()
@@ -166,6 +169,7 @@ def get_pwm():
             k,v = p.split(":")
             parsed_data[k] = v if v else 0.00
         w = parsed_data.get('w')
+        u = parsed_data.get('u')
         return w
     except:
         pass
@@ -436,7 +440,7 @@ while True:
         temp = read_temp()
         update_screen(s, temp)
 
-    # if both buttons are pressed, do nothing
+    # if both buttons are pressed, show debug screen
     if GPIO.input(button1) == 0 and GPIO.input(button2) == 0:
         start_time = time.time()
         while GPIO.input(button1) == 0 and GPIO.input(button2) == 0:

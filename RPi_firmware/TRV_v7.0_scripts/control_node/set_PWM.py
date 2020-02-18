@@ -19,6 +19,7 @@ s_start = 635   # initialize servo PWM ranges as normal (130-600 is for special 
 s_end = 150
 setpoint = 0
 pwm_value = 400
+u = 0
 
 # set all temporary directories
 temp_data_dir = '/home/pi/datalogger/temp_data'
@@ -44,6 +45,7 @@ def load_config():
 
 # read setpoint from file
 def get_setpoint(datatype):
+    global u
     if datatype == 'latest':
         filename = node_ID[0]
     elif datatype == 'old':
@@ -61,6 +63,7 @@ def get_setpoint(datatype):
             k,v = p.split(":")
             parsed_data[k] = v if v else 0.00
         s = parsed_data.get('y')
+        u = parsed_data.get('u')
         return s
     except:
         return 0
@@ -68,6 +71,7 @@ def get_setpoint(datatype):
 
 # save setpoint to file
 def save_setpoint(datatype, setpoint, pwm_value):
+    global u
     if datatype == 'latest':
         filename = node_ID[0]
     elif datatype == 'old':
@@ -75,7 +79,7 @@ def save_setpoint(datatype, setpoint, pwm_value):
     
     try:
         file = open('%s/%s.csv' % (temp_data_dir, filename),'w')
-        file.write("i:%s,y:%s,u:0,w:%s" % (node_ID[0], str(setpoint), str(pwm_value)))
+        file.write("i:%s,y:%s,u:%s,w:%s" % (node_ID[0], str(setpoint), str(u), str(pwm_value)))
         file.close()
     except:
         pass
