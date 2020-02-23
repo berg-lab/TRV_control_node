@@ -4,7 +4,7 @@
 # Honeywell thermostatic radiator valve control unit T100B1035/T104B1038
 
 # Developed by Akram Ali
-# Last updated on: 02/17/2019
+# Last updated on: 02/23/2019
 
 import Adafruit_PCA9685
 import time
@@ -18,6 +18,7 @@ pwm.set_pwm_freq(60)        # Set frequency to 60hz, good for servos.
 s_start = 635   # initialize servo PWM ranges as normal (130-600 is for special servo)
 s_end = 150
 setpoint = 0
+setpoint_step_size = 7
 pwm_value = 400
 u = 0
 
@@ -102,7 +103,8 @@ while True:
         s_start = 600
         s_end = 130
 
-    setpoint_step_size = int(config[0]['acf']['setpoint_step_size'])
+    if 'setpoint_step_size' in config[0]['acf']:
+        setpoint_step_size = int(config[0]['acf']['setpoint_step_size'])
 
     # create list with PWM values
     pwm_list=[]

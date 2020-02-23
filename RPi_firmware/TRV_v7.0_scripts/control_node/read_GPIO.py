@@ -208,7 +208,8 @@ def setpoint_display(_s):
             temp_setpoint = _s
 
     else:
-        setpoint_step_size = config[0]['acf']['setpoint_step_size']
+        if 'setpoint_step_size' in config[0]['acf']:
+            setpoint_step_size = config[0]['acf']['setpoint_step_size']
         max_setpoint = int(setpoint_step_size) - 1
 
         displayed_s = str(_s)
