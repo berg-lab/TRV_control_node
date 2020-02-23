@@ -31,7 +31,8 @@
             "preheat": false,
             "setpoint_step_size": "7",
             "check_motion_value": "custom",
-            "check_motion_setpoint": "4"
+            "check_motion_setpoint": "4",
+            "temp_type": "air_temp"
         }
     }
 ]
