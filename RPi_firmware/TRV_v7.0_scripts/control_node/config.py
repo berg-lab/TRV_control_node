@@ -6,7 +6,7 @@
 # and sets automation scripts on the node.
 
 # Developed by Akram Ali
-# Last updated on: 02/17/2020
+# Last updated on: 02/23/2020
 
 import os
 import requests
@@ -310,6 +310,16 @@ def set_preheat(_config):
 			os.system("sudo sed -i '/preheat/s/^/#/' /etc/rc.local")	# comment preheat
 
 
+def set_temp_type(_config):
+		temp_type = _config[0]['acf']['temp_type']
+
+		if temp_type == 'operative_temp':
+			os.system("sudo sed -i '/operative/ s/#//g' /etc/rc.local")	# uncomment
+
+		elif temp_type == 'air_temp':
+			os.system("sudo sed -i '/operative/ s/#//g' /etc/rc.local")	# uncomment
+			os.system("sudo sed -i '/operative/s/^/#/' /etc/rc.local")	# comment
+
 
 # clear old config files on boot
 # del_file('config.json')
@@ -364,6 +374,16 @@ while True:
 
 			if new_preheat != old_preheat:
 				set_preheat(config)
+				reboot_flag = True
+			else:
+				pass
+
+		if 'temp_type' in config[0]['acf']:
+			new_temp_type = config[0]['acf']['temp_type']
+			old_temp_type = old_config[0]['acf']['temp_type']
+
+			if new_temp_type != old_temp_type:
+				set_temp_type(config)
 				reboot_flag = True
 			else:
 				pass

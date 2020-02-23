@@ -2,7 +2,7 @@
 
 # Control Node
 # Developed by Akram Ali & Chris Riley
-# Last updated on: 02/17/2020
+# Last updated on: 02/23/2020
 
 version = "v7.0"
 
@@ -30,7 +30,7 @@ json_dir = '/home/pi/control_node/'
 node_ID = [".".join(f.split(".")[:-1]) for f in os.listdir(control_node_id_dir) if f.endswith(".node")]
 
 # set all scripts to check if they're running
-scripts = ['config','read_GPIO', 'read_serial', 'write_serial','set_PWM','datalogger',
+scripts = ['config','read_GPIO', 'read_serial', 'write_serial','set_PWM','operative_temp','datalogger',
 'monitor_core_temp','preheat','enforce_schedule','check_motion','pid_temp']
 
 # initialize global variables
@@ -87,7 +87,7 @@ def get_running_scripts():
 
     for p in PIDs:
         n+=1
-        if n == 6 or n == 8:
+        if n == 7 or n == 9:
             script_status.append(' ')
         if p == '':
             script_status.append('0')
@@ -98,8 +98,14 @@ def get_running_scripts():
 
 # get latest temperature from file
 def read_temp():
+    global config
+    temp_type = config[0]['acf']['temp_type']
+    if temp_type == 'air_temp':
+        filename = ''
+    elif temp_type == 'operative_temp':
+        filename = '_operative'
     try:
-        file = open('%s/%d.csv' % (temp_data_dir, int(node_ID[0])+1),'r')        # get data from TRH node file
+        file = open('%s/%d%s.csv' % (temp_data_dir, int(node_ID[0])+1, filename),'r')        # get data from TRH node file
         data = file.readline()
         file.close()
     except:

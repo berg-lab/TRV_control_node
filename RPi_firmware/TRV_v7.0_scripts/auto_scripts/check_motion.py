@@ -5,7 +5,7 @@
 # It also allows for auto scripts to run uninterrupted
 
 # Developed by Akram Ali
-# Last updated on: 02/17/2020
+# Last updated on: 02/23/2020
 
 import time
 import os
@@ -83,8 +83,15 @@ def read_control_node():
 
 # get latest temperature reading from file
 def read_temperature():
+    global config
+    temp_type = config[0]['acf']['temp_type']
+    if temp_type == 'air_temp':
+        filename = ''
+    elif temp_type == 'operative_temp':
+        filename = '_operative'
+
     try:
-        file = open('%s/%d.csv' % (temp_data_dir, int(node_ID[0])+1),'r')        # get data from temp node file
+        file = open('%s/%d.csv' % (temp_data_dir, int(node_ID[0])+1, filename),'r')        # get data from temp node file
         data = file.readline()
         file.close()
     except:

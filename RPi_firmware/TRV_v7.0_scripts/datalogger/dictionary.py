@@ -29,6 +29,8 @@ sensorType = {'a':'air_temperature',
             'kp':'kp',
             'ki':'ki',
             'kd':'kd',
+            'tmr':'tmr',
+            'to':'to',
             }
 
 # Sensor unit
@@ -121,4 +123,6 @@ sensorName = {'a':'Air Stream Temperature',
             'kp':'kp',
             'ki':'ki',
             'kd':'kd',
+            'tmr':'MRT',
+            'to':'Operative Temperature'
             }

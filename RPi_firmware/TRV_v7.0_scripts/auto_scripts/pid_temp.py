@@ -4,7 +4,7 @@
 # The output is servo setpoint values
 
 # Developed by Akram Ali
-# Last updated on: 02/17/2020
+# Last updated on: 02/23/2020
 
 from pathlib import Path
 import Adafruit_PCA9685
@@ -76,8 +76,14 @@ def read_setpoint():
 
 # get latest temperature from file
 def read_temp():
+    global config
+    temp_type = config[0]['acf']['temp_type']
+    if temp_type == 'air_temp':
+        filename = ''
+    elif temp_type == 'operative_temp':
+        filename = '_operative'
     try:
-        file = open('%s/%d.csv' % (temp_data_dir, int(node_ID[0])+1),'r')        # get data from TRH node file
+        file = open('%s/%d.csv' % (temp_data_dir, int(node_ID[0])+1, filename),'r')        # get data from TRH node file
         data = file.readline()
         file.close()
     except:
