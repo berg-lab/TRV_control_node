@@ -24,7 +24,7 @@ put_url = 'http://config.elemental-platform.com/wp-json/acf/v3/nodes/'
 auth = ('node', 'vvET(G6^kmkhx)l!!Zqnd@)^')
 
 control_strategies = ['manual', 'enforced_schedule', 'check_motion', 'pid_temp', 'pid_temp_motion']
-scripts = ['config','read_GPIO', 'read_serial', 'write_serial','set_PWM','datalogger',
+scripts = ['config','read_GPIO', 'read_serial', 'write_serial','set_PWM','operative_temp','datalogger',
 'monitor_core_temp','preheat','enforce_schedule','check_motion','pid_temp'] # set all scripts to check if they're running
 reboot_flag = False
 put_config_flag = False
@@ -81,7 +81,7 @@ def get_running_scripts():
 
 	for p in PIDs:
 		n+=1
-		if n == 6 or n == 8:
+		if n == 7 or n == 9:
 			script_status.append(' ')
 		if p == '':
 			script_status.append('0')

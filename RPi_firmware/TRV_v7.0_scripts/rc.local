@@ -19,12 +19,12 @@ fi
 cd /home/pi/control_node;python read_serial.py &
 cd /home/pi/control_node;python config.py &
 cd /home/pi/control_node;python read_GPIO.py &
-cd /home/pi/control_node;python set_PWM.py &
+#cd /home/pi/control_node;python set_PWM.py &
 cd /home/pi/control_node;python write_serial.py &
-#cd /home/pi/control_node;python operative_temp.py &
+cd /home/pi/control_node;python operative_temp.py &
 cd /home/pi/datalogger;python datalogger.py &
 #cd /home/pi/auto_scripts;python enforced_schedule.py &
 #cd /home/pi/auto_scripts;python check_motion.py &
-#cd /home/pi/auto_scripts;python pid_temp.py &
+cd /home/pi/auto_scripts;python pid_temp.py &
 #cd /home/pi/auto_scripts;python preheat.py &
 exit 0
