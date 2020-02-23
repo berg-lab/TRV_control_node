@@ -54,7 +54,7 @@ bottom_text = ''
 top_font_size = 17
 bottom_font_size = 12
 
-time.sleep(1)
+time.sleep(2)
 
 # read config json file
 def load_config():
