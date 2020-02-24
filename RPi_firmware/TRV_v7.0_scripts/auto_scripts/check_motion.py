@@ -91,7 +91,7 @@ def read_temperature():
         filename = '_operative'
 
     try:
-        file = open('%s/%d.csv' % (temp_data_dir, int(node_ID[0])+1, filename),'r')        # get data from temp node file
+        file = open('%s/%d%s.csv' % (temp_data_dir, int(node_ID[0])+1, filename),'r')        # get data from temp node file
         data = file.readline()
         file.close()
     except:

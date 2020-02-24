@@ -83,7 +83,7 @@ def read_temp():
     elif temp_type == 'operative_temp':
         filename = '_operative'
     try:
-        file = open('%s/%d.csv' % (temp_data_dir, int(node_ID[0])+1, filename),'r')        # get data from TRH node file
+        file = open('%s/%d%s.csv' % (temp_data_dir, int(node_ID[0])+1, filename),'r')        # get data from TRH node file
         data = file.readline()
         file.close()
     except:
