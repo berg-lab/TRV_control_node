@@ -4,7 +4,7 @@
 # The output is servo setpoint values
 
 # Developed by Akram Ali
-# Last updated on: 02/23/2020
+# Last updated on: 02/27/2020
 
 from pathlib import Path
 import Adafruit_PCA9685
@@ -32,6 +32,7 @@ pid_temp = 75
 pid_temp_sleep_interval = 30    # default sleep interval for script
 pid = PID(1, 0.1, 0.05)
 sp = 400    # starting setpoint
+old_sp = 400
 setpoint = 75 # starting set temperature
 pid.sample_time = 60  # update every 60 seconds
 pid.output_limits = (-200, 200)    # output value will be between -200 and 200
@@ -108,6 +109,7 @@ def set_new_PWM(output, current_temp):
     global u
     global setpoint
     global config
+    global old_sp
 
     # output = round(output * 10) # make the output larger for quicker changes to the PID control
     # output = int(output)
@@ -129,8 +131,20 @@ def set_new_PWM(output, current_temp):
     elif sp < s_end:
         sp = s_end
 
-    # set servo PWM based on setpoint
-    pwm.set_pwm(0, 0, sp)
+    # only apply new PWM value if it's significantly different from previous
+    if old_sp == sp:
+        pass
+    elif abs(old_sp - sp) <= 2:   # check if new setpoint is close enough from old setpoint
+        # if new setpoint is very close or equal to limits, apply
+        if (abs(old_sp - s_start) <= 2 and sp >= s_start - 2) or (abs(old_sp - s_end) <= 2 and sp <= s_end + 2):
+            if old_sp == sp:    # if setpoints are same, don't do anything
+                pass
+            else:
+                pwm.set_pwm(0, 0, sp)   # set servo PWM based on setpoint
+        pass    # new setpoint is close to previous but not to limits; don't do anything
+    else:   # new setpoint is further away from previous; change it
+        pwm.set_pwm(0, 0, sp)   # set servo PWM based on setpoint
+        old_sp = sp     # update old value
 
     # save latest PWM value to temp file
     try:
